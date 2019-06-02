@@ -1,6 +1,4 @@
 
-
-
 var DButilsAzure = require('./DButils');
 const jwt = require("jsonwebtoken");
 
@@ -9,6 +7,17 @@ async function getAllPoints() {
 }
 
 module.exports.getAllPoints = getAllPoints;
+
+async function getPointsByCategory(category) {
+    return await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE category = '" + category + "'");
+}
+module.exports.getPointsByCategory = getPointsByCategory;
+
+async function getAllCategories() {
+    return await DButilsAzure.execQuery("SELECT * FROM category");
+}
+module.exports.getAllCategories = getAllCategories;
+
 
 function getDate() {
     var today = new Date();
@@ -21,7 +30,8 @@ function getDate() {
 
 async function getClickedPointDetails(point_id) {
     try {
-        let pointDetails = await DButilsAzure.execQuery("SELECT views_num, description, avg_rate FROM point_of_interest WHERE point_id = '" + point_id + "'");
+        await advanceViews(point_id);
+        let pointDetails = await DButilsAzure.execQuery("SELECT point_name, description, views_num, avg_rate FROM point_of_interest WHERE point_id = '" + point_id + "'");
         let pointReviews = await DButilsAzure.execQuery("SELECT * FROM poi_review WHERE point_id = '" + point_id + "' ORDER BY date DESC");
         if (pointReviews.length <= 2)
             pointDetails.push(pointReviews);
@@ -64,7 +74,7 @@ module.exports.getPointByName = getPointByName;
 
 async function getPointByID(point_id) {
     try {
-        let point = await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE point_name = '" + point_id + "'");
+        let point = await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE point_id = '" + point_id + "'");
         if (point.length !== 0){
             await advanceViews(point_id);
             return point;
@@ -126,12 +136,12 @@ module.exports.updatePoint = updatePoint;
 
 async function createPoint(point_name, category, location, description, img_src) {
     let sqlRes = await DButilsAzure.execQuery("SELECT * FROM category WHERE category = '" + category + "'");
-    if (sqlRes.length !== 0){
+    if (sqlRes.length === 0){
         return new Error("Illegal Category, Please choose exist category or add new category first");
     }
-    await DButilsAzure.execQuery("INSERT INTO point_of_interest (point_name, category, location, description, img_src)" +
+    sqlRes = await DButilsAzure.execQuery("INSERT INTO point_of_interest (point_name, category, location, description, img_src)" +
         "VALUES ('" + point_name + "','" + category + "','" + location + "','" + description + "','" + img_src + "')");
-    return "New point added";
+    return "New point added, its point_id: ";
 }
 module.exports.createPoint = createPoint;
 
@@ -200,6 +210,7 @@ async function getMostPopularPoints(categories_name) {
 module.exports.getMostPopularPoints = getMostPopularPoints;
 
 async function saveUserPoints(username, user_points) {
+    await DButilsAzure.execQuery("DELETE FROM points_of_users WHERE username = '" + username + "'");
     user_points = JSON.parse(user_points);
     let totalPoints = user_points.length; // How many points the user ask to save
     let savedPoints = 0; // Counts the new point that save

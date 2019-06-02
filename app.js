@@ -94,7 +94,7 @@ app.post("/passwordRetrieval", async function (req, res) {
 
 app.post("/user/getFullUserDetails", async function (req, res) {
     let username = req.decoded.username;
-    let user_details = req.body.user_details;
+    let user_details = req.body.username_details;
     if (username !== "admin")
         res.status(401).send("You are not authorized to make that action");
     var result = await user_module.getFullUserDetails(user_details);
@@ -107,7 +107,7 @@ app.post("/user/getFullUserDetails", async function (req, res) {
 });
 
 app.get("/user/getUserDetails", async function (req, res) {
-    let user_details = req.body.user_details;
+    let user_details = req.body.username_details;
     var result = await user_module.getUserDetails(user_details);
     if (result instanceof Error) {
         console.log(result);
@@ -180,6 +180,27 @@ app.get("/getPointByName", async function (req, res) {
 
 app.get("/getAllPoints", async function (req, res) {
     var result = await poi_module.getAllPoints();
+    if (result instanceof Error) {
+        console.log(result);
+        res.status(400).send(result.message);
+    } else {
+        res.status(200).send(result);
+    }
+});
+
+app.get("/getPointsByCategory", async function (req, res) {
+    let category = req.body.category;
+    var result = await poi_module.getPointsByCategory(category);
+    if (result instanceof Error) {
+        console.log(result);
+        res.status(400).send(result.message);
+    } else {
+        res.status(200).send(result);
+    }
+});
+
+app.get("/getAllCategories", async function (req, res) {
+    var result = await poi_module.getAllCategories();
     if (result instanceof Error) {
         console.log(result);
         res.status(400).send(result.message);
@@ -274,8 +295,8 @@ app.put("/user/updatePoint", async function (req, res) {
         let point_id = req.body.point_id;
         let point_name = req.body.point_name;
         let category = req.body.category;
-        let location = req.body.location;
-        let description = req.body.description;
+        let location = req.body.locatio;
+        let description = req.body.descrip;
         let img_src = req.body.img_src;
         var result = await poi_module.updatePoint(point_id, point_name, category, location, description, img_src);
         if (result instanceof Error) {
@@ -307,6 +328,8 @@ app.put("/user/createPoint", async function (req, res) {
         }
     }
 });
+
+
 
 // app.put("/user/setCountries", async function (req, res) {
 //     let username = req.decoded.username;

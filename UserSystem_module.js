@@ -89,10 +89,10 @@ async function updateUser(Username, Password, Firstname, Lastname, City, Country
             set += " country_id ='" + Country + "', ";
         if (Email !== undefined && emailIsValid(Email))
             set += " email ='" + Email + "', ";
-        if (Interests !== undefined && interestsIsValid(Interests))
-            set += " img_src ='" + img_src + "', ";
-        if (QA !== undefined && QAIsValid(QA))
-            set += " img_src ='" + img_src + "', ";
+        // if (Interests !== undefined && interestsIsValid(Interests))
+        //     set += " img_src ='" + img_src + "', ";
+        // if (QA !== undefined && QAIsValid(QA))
+        //     set += " img_src ='" + img_src + "', ";
 
         set = set.substring(0, set.length - 2);
         let query = update + " " + set + " " + where;
