@@ -53,9 +53,9 @@ async function getFullUserDetails(user_detail) {
 module.exports.getFullUserDetails = getFullUserDetails;
 
 async function getUserDetails(user_details) {
-    return await DButilsAzure.execQuery("SELECT [user].username, [user].first_name, [user].last_name, [user].city, country.country_name, c.category " +
+    return await DButilsAzure.execQuery("SELECT [user].username, [user].first_name, [user].last_name, [user].city, country.country, c.category " +
         "FROM [user] " +
-        "INNER JOIN country on [user].country_id = country.country_id " +
+        "INNER JOIN country on [user].country = country.country " +
         "INNER JOIN categories_of_users c on [user].username = c.username " +
         "WHERE [user].username = '" + user_details + "'");
 }

@@ -15,16 +15,29 @@ app.listen(port, function () {
 
 app.use("/user", (req, res, next) => {
     var secret = "secret";
-    const token = req.header("x-auth-token");
+    const token = req.query["x-auth-token"];
     // no token
     if (!token) res.status(401).send("Access denied. No token provided.");
     // verify token
     try {
         const decoded = jwt.verify(token, secret);
         req.decoded = decoded;
+        // Website you wish to allow to connect
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        // Request methods you wish to allow
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST,PUT,DELETE');
+
+        // Request headers you wish to allow
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+
+        // Set to true if you need the website to include cookies in the requests sent
+        // to the API (e.g. in case you use sessions)
+        res.setHeader('Access-Control-Allow-Credentials', true);
+
         next(); //move on to the actual function
     } catch (exception) {
-        res.status(400).send("Invalid token.");
+        res.status(400). send("Invalid token.");
     }
 });
 
@@ -107,7 +120,7 @@ app.post("/user/getFullUserDetails", async function (req, res) {
     }
 });
 
-app.get("/user/getUserDetails", async function (req, res) {
+app.post("/user/getUserDetails", async function (req, res) {
     let user_details = req.query.username_details;
     var result = await user_module.getUserDetails(user_details);
     if (result instanceof Error) {
@@ -157,7 +170,7 @@ app.get("/getClickedPointDetails", async function (req, res) {
     }
 });
 
-app.get("/getMostPopularPoints", async function (req, res) {
+app.get("/getMostPopularPointsByCategory", async function (req, res) {
     let categories_name = req.query.categories_name;
     var result = await poi_module.getMostPopularPoints(categories_name);
     if (result instanceof Error) {

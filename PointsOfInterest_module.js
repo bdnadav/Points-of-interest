@@ -192,10 +192,10 @@ module.exports.getInterestPointReviews = getInterestPointReviews;
 
 async function getMostPopularPoints(categories_name) {
     try {
-        categories_name = JSON.parse(categories_name);
         let ans = [];
         for (let i = 0; i < categories_name.length; i++) {
-            let mostPopCatPoint = await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE category = '" + categories_name[i] + "' ORDER BY views_num DESC");
+            let single = JSON.parse(categories_name[i]);
+            let mostPopCatPoint = await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE category = '" + single.category + "' ORDER BY views_num DESC");
             if (mostPopCatPoint.length !== 0){
                 await advanceViews(mostPopCatPoint["0"].point_id);
                 ans.push(mostPopCatPoint[0]);
