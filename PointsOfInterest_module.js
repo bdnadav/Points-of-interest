@@ -9,6 +9,7 @@ async function getAllPoints() {
 module.exports.getAllPoints = getAllPoints;
 
 async function getPointsByCategory(category) {
+    console.log(category);
     return await DButilsAzure.execQuery("SELECT * FROM point_of_interest WHERE category = '" + category + "'");
 }
 module.exports.getPointsByCategory = getPointsByCategory;

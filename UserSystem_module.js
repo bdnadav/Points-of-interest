@@ -28,8 +28,8 @@ module.exports.login = login;
 
 async function register(Username, Password, Firstname, Lastname, City, CountryID, Email, Interests, QA) { // Firstname, Lastname and City can be null
     try {
-        QA = JSON.parse(QA);
-        Interests = JSON.parse(Interests);
+        // QA = JSON.parse(QA);
+        // Interests = JSON.parse(Interests);
         var registerErrors;
         registerErrors = await checkRegisterValidation(Username, Password, CountryID, Email, Interests, QA);
         if (registerErrors instanceof Error)
@@ -140,9 +140,9 @@ async function getUserAuthenQA(userName) {
 }
 
 
-async function insertToDBTables(Username, Password, Firstname, Lastname, City, CountryID, Email, Interests, QA) {
+async function insertToDBTables(Username, Password, Firstname, Lastname, City, CountryName, Email, Interests, QA) {
     try {
-        const userTableQuery = await DB_insertToUserTable(Username, Password, Firstname, Lastname, City, CountryID, Email);
+        const userTableQuery = await DB_insertToUserTable(Username, Password, Firstname, Lastname, City, CountryName, Email);
         const categoryOfUsersQuery = await DB_insertToUsersCategoriesTable(Username, Interests);
         const authenQAOfUsersQuery = await DB_insertToQATables(Username, Interests, QA);
     } catch (e) {
@@ -150,15 +150,16 @@ async function insertToDBTables(Username, Password, Firstname, Lastname, City, C
     }
 }
 
-async function DB_insertToUserTable(Username, Password, Firstname, Lastname, City, CountryID, Email) {
-    sqlResult = await DButilsAzure.execQuery("INSERT INTO [user] (username, password, first_name, last_name, city, country_id, email)" +
-        "VALUES ('" + Username + "','" + Password + "','" + Firstname + "','" + Lastname + "','" + City + "','" + CountryID + "','" + Email + "')")
+async function DB_insertToUserTable(Username, Password, Firstname, Lastname, City, CountryName, Email) {
+    sqlResult = await DButilsAzure.execQuery("INSERT INTO [user] (username, password, first_name, last_name, city, country, email)" +
+        "VALUES ('" + Username + "','" + Password + "','" + Firstname + "','" + Lastname + "','" + City + "','" + CountryName + "','" + Email + "')")
 }
 
 async function DB_insertToQATables(Username, Interests, QA) {
     for (let i = 0; i < QA.length; i++) {
+        let singleQA = JSON.parse(QA[i]);
         sqlResult = await DButilsAzure.execQuery("INSERT INTO authen_qa_of_users (answer, username, question)" +
-            "VALUES ('" + QA[i].ans + "','" + Username + "','" + QA[i].ques + "')")
+            "VALUES ('" + singleQA.ans + "','" + Username + "','" + singleQA.ques + "')")
     }
 }
 
@@ -209,9 +210,9 @@ function passwordIsValid(Password) {
     return true;
 }
 
-async function countryIsValid(country_id) {
+async function countryIsValid(country) {
     try {
-        var sqlResult = await DButilsAzure.execQuery("SELECT * FROM country WHERE country_id = '" + country_id + "'");
+        var sqlResult = await DButilsAzure.execQuery("SELECT * FROM country WHERE country = '" + country + "'");
         if (sqlResult.length === 0)
             return false;
         return true;
@@ -255,9 +256,10 @@ async function QAIsValid(QA) {
         return "For your security, Please provide answer to at least 2 authentication questions";
     }
     for (let i = 0; i < QA.length; i++) {
-        if (QA[i].ques === undefined || QA[i].ans === undefined)
+        let singleQA = JSON.parse(QA[i]);
+        if (singleQA.ques === undefined || singleQA.ans === undefined)
             return "For your security, Please provide answer to at least 2 authentication questions";
-        var sqlResult = await DButilsAzure.execQuery("SELECT * FROM authen_question WHERE question = '" + QA[i].ques + "'");
+        var sqlResult = await DButilsAzure.execQuery("SELECT * FROM authen_question WHERE question = '" + singleQA.ques + "'");
         if (sqlResult.length === 0)
             return "Please choose legal authentication questions";
     }

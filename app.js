@@ -49,7 +49,7 @@ app.post("/register", async function (req, res) {
     let Firstname = req.query.Firstname;
     let Lastname = req.query.Lastname;
     let City = req.query.City;
-    let Country = req.query.CountryID;
+    let Country = req.query.Country;
     let Email = req.query.Email;
     let Interests = req.query.Interests;
     let QA = req.query.QA;
@@ -63,7 +63,7 @@ app.post("/register", async function (req, res) {
 });
 
 app.post("/user/updateUser", async function (req, res) {
-    let Username = req.decoded.username;
+    let Username = req.decoded.Username;
     let Password = req.query.Password;
     let Firstname = req.query.Firstname;
     let Lastname = req.query.Lastname;
@@ -190,10 +190,14 @@ app.get("/getAllPoints", async function (req, res) {
 });
 
 app.get("/getPointsByCategory", async function (req, res) {
+    console.log("req.query.category: " + req.query.category);
+    // let jsonCategory = JSON.parse(req.query.category);
+    // console.log(jsonCategory);
+    // var result = await poi_module.getPointsByCategory(jsonCategory.category);
     let category = req.query.category;
     var result = await poi_module.getPointsByCategory(category);
     if (result instanceof Error) {
-        console.log(result);
+        console.log("result: " + result);
         res.status(400).send(result.message);
     } else {
         res.status(200).send(result);
