@@ -28,8 +28,8 @@ module.exports.login = login;
 
 async function register(Username, Password, Firstname, Lastname, City, CountryID, Email, Interests, QA) { // Firstname, Lastname and City can be null
     try {
+        console.log(Interests);
         // QA = JSON.parse(QA);
-        // Interests = JSON.parse(Interests);
         var registerErrors;
         registerErrors = await checkRegisterValidation(Username, Password, CountryID, Email, Interests, QA);
         if (registerErrors instanceof Error)

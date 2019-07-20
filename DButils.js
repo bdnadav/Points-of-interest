@@ -15,8 +15,12 @@ var poolConfig = {
 var connectionConfig = {
     userName: 'bardanad',
     password: 'et07GCVb',
+    // userName: 'harelsa',
+    // password: 'sAs5onha',
     server: 'assignment3-nadav-harel.database.windows.net',
+    // server: 'ass3webdev-harel-nadav.database.windows.net',
     options: { encrypt: true, database: 'assignment3' }
+    //options: { encrypt: true, database: 'Ass3db' }
 };
 
 //create the pool
